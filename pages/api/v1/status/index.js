@@ -19,11 +19,17 @@ export default async function status(request, response) {
       const firstQueryDuration = performance.now() - firstTimerInit;
 
       const secondTimerInit = performance.now();
-      const openedConnectionsResult = await database.query(
-        "SELECT count(*)::int FROM pg_stat_activity WHERE datname = 'local_db'",
-      );
-      const openedConnectionsValue =
-        openedConnectionsResult.rows[0].count;
+
+      const databaseName = process.env.POSTGRES_DB;
+      const query =
+        "SELECT count(*)::int FROM pg_stat_activity WHERE datname = $1;";
+
+      const openedConnectionsResult = await database.query({
+        text: query,
+        values: [databaseName],
+      });
+
+      const openedConnectionsValue = openedConnectionsResult.rows[0].count;
       const secondQueryDuration = performance.now() - secondTimerInit;
 
       const thirdTimerInit = performance.now();
@@ -34,8 +40,7 @@ export default async function status(request, response) {
       health = {
         status: "healthy",
         version: versionValue,
-        max_connections:
-          parseInt(maxConnectionsValue),
+        max_connections: parseInt(maxConnectionsValue),
         opened_connections: openedConnectionsValue,
         latency: {
           first_query: firstQueryDuration,
