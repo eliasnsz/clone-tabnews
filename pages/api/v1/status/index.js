@@ -8,14 +8,11 @@ export default async function status(request, response) {
 
     try {
       const firstTimerInit = performance.now();
-      const [maxConnectionsResult, superuserReservedConnectionsResult] =
-        await database.query(
-          "SHOW max_connections; SHOW superuser_reserved_connections",
-        );
+      const maxConnectionsResult = await database.query(
+        "SHOW max_connections;",
+      );
       const maxConnectionsValue = maxConnectionsResult.rows[0].max_connections;
-      const superuserReservedConnectionsValue =
-        superuserReservedConnectionsResult.rows[0]
-          .superuser_reserved_connections;
+
       const firstQueryDuration = performance.now() - firstTimerInit;
 
       const secondTimerInit = performance.now();

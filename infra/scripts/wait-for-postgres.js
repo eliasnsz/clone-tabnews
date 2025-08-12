@@ -16,7 +16,7 @@ function checkPostgres() {
     handleReturn,
   );
 
-  function handleReturn(error, stdout, stderr) {
+  function handleReturn(_error, stdout) {
     if (stdout.search("accepting connections") === -1) {
       twirlTimer;
       checkPostgres();
